@@ -8,16 +8,19 @@ import com.example.messengerapp.databinding.ActivityMainBinding
 import com.example.messengerapp.ui.signin.SignInActivity
 
 class MainActivity : AppCompatActivity() {
-//private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val btnGoToSignin = findViewById<TextView>(R.id.btn_go_to_singin)
-        btnGoToSignin.setOnClickListener {
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        binding.btnGoToSingin.setOnClickListener {
             val intent = Intent(this, SignInActivity::class.java)
             startActivity(intent)
         }
+
 
     }
 }
