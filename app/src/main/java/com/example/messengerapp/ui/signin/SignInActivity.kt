@@ -1,25 +1,26 @@
 package com.example.messengerapp.ui.signin
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.example.messengerapp.R
-import com.example.messengerapp.data.remote.signin.LogInDataSource
-import com.example.messengerapp.databinding.ActivityMainBinding
+import com.example.messengerapp.data.remote.signin.SignInDataSource
 import com.example.messengerapp.databinding.ActivitySignInBinding
-import com.example.messengerapp.presentation.login.LogInViewModel
-import com.example.messengerapp.presentation.login.LoginViewModelFactory
-import com.example.messengerapp.repository.login.LogInRepoImpl
+import com.example.messengerapp.presentation.signin.SignInViewModel
+import com.example.messengerapp.presentation.signin.SignViewModelFactory
+import com.example.messengerapp.repository.signin.SignInRepoImpl
 import com.example.messengerapp.utils.Resource
 
 class SignInActivity : AppCompatActivity() {
-    private val signInViewModel by viewModels<LogInViewModel> {
-        LoginViewModelFactory(LogInRepoImpl(LogInDataSource()))
+    private val REQUESTCODE = 1
+    private val signInViewModel by viewModels<SignInViewModel> {
+        SignViewModelFactory(SignInRepoImpl(SignInDataSource()))
     }
     lateinit var binding: ActivitySignInBinding
 
@@ -29,10 +30,28 @@ class SignInActivity : AppCompatActivity() {
         binding = ActivitySignInBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
         binding.btnGoToLogin.setOnClickListener {
             finish()
         }
+
+        pickProfileImage()
         getUserAndPassword()
+    }
+
+    private fun pickProfileImage() {
+        binding.profileImageView.setOnClickListener {
+            val takePictureIntent = Intent(Intent.ACTION_PICK)
+            startActivityForResult(takePictureIntent, REQUESTCODE)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUESTCODE && resultCode == RESULT_OK) {
+        val imgbitmap = data?.extras?.get("data") as Bitmap
+            binding.profileImageView.setImageBitmap(imgbitmap)
+        }
     }
 
     private fun getUserAndPassword() {
@@ -45,7 +64,7 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun validateinfo(user: String, pass: String, repeatpass : String) {
+    private fun validateinfo(user: String, pass: String, repeatpass: String) {
         if (user.isEmpty()) {
             binding.editTxtEmail.error = "Please enter a value"
             return
@@ -54,11 +73,11 @@ class SignInActivity : AppCompatActivity() {
             binding.editTxtPassword.error = "Please enter a password"
             return
         }
-        if(repeatpass.isEmpty()){
+        if (repeatpass.isEmpty()) {
             binding.editTxtRepeatPassword.error = "Please enter a password"
             return
         }
-        if(repeatpass != pass){
+        if (repeatpass != pass) {
             binding.editTxtRepeatPassword.error = "Enter the same password as before"
             return
         }

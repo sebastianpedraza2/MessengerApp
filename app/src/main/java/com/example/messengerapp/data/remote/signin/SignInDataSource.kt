@@ -8,8 +8,8 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 
 
-class LogInDataSource {
-    suspend fun logIn(username: String, password: String): FirebaseUser? {
+class SignInDataSource {
+    suspend fun signIn(username: String, password: String): FirebaseUser? {
         val loginResult = FirebaseAuth.getInstance().createUserWithEmailAndPassword(username, password).await()
         return loginResult.user
     }

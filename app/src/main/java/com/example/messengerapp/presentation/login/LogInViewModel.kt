@@ -11,18 +11,16 @@ class LogInViewModel(private val logInRepo: LogInRepo) : ViewModel() {
     fun login(username: String, password: String) = liveData(Dispatchers.IO) {
         emit(Resource.Loading())
         try {
-            emit(
-                Resource.Success(
-                    logInRepo.login(username, password)
-                )
-            )
+            emit(Resource.Success(logInRepo.login(username, password)))
         } catch (e: Exception) {
-            emit(Resource.Failure(e))
+            emit(
+                Resource.Failure(e)
+            )
         }
     }
 }
 
-class LoginViewModelFactory(private val logInRepo: LogInRepo) : ViewModelProvider.Factory {
+class LogInViewModelFactory(private val logInRepo: LogInRepo) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return LogInViewModel(logInRepo) as T
     }
