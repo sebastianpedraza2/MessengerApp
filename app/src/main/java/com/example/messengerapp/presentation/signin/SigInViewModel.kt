@@ -1,5 +1,6 @@
 package com.example.messengerapp.presentation.signin
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.liveData
@@ -8,12 +9,14 @@ import com.example.messengerapp.utils.Resource
 import kotlinx.coroutines.Dispatchers
 
 class SignInViewModel(private val signInRepo: SignInRepo) : ViewModel() {
-    fun login(username: String, password: String) = liveData(Dispatchers.IO) {
+
+    fun login(username: String, password: String, bitmap: Bitmap,
+              name: String) = liveData(Dispatchers.IO) {
         emit(Resource.Loading())
         try {
             emit(
                 Resource.Success(
-                    signInRepo.login(username, password)
+                    signInRepo.login(username, password, bitmap, name)
                 )
             )
         } catch (e: Exception) {
@@ -24,6 +27,6 @@ class SignInViewModel(private val signInRepo: SignInRepo) : ViewModel() {
 
 class SignViewModelFactory(private val signInRepo: SignInRepo) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return SignInViewModel(signInRepo) as T
+        return SignInViewModel(signInRepo) as T        
     }
 }

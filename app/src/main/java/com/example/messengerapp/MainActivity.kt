@@ -20,6 +20,10 @@ import com.example.messengerapp.utils.Resource
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    /**
+     * Todo change to koin di injection
+     */
     private val loginViewModel by viewModels<LogInViewModel> {
         LogInViewModelFactory(LogInRepoImpl(LogInDataSource()))
     }
@@ -30,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
         binding.btnGoToSingin.setOnClickListener {
             val intent = Intent(this, SignInActivity::class.java)
             startActivity(intent)

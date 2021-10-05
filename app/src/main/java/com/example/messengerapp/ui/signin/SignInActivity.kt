@@ -1,10 +1,12 @@
 package com.example.messengerapp.ui.signin
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Intent
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -19,6 +21,7 @@ import com.example.messengerapp.utils.Resource
 
 class SignInActivity : AppCompatActivity() {
     private val REQUESTCODE = 1
+    private lateinit var imgbitmap: Bitmap
     private val signInViewModel by viewModels<SignInViewModel> {
         SignViewModelFactory(SignInRepoImpl(SignInDataSource()))
     }
@@ -42,6 +45,7 @@ class SignInActivity : AppCompatActivity() {
     private fun pickProfileImage() {
         binding.profileImageView.setOnClickListener {
             val takePictureIntent = Intent(Intent.ACTION_PICK)
+            takePictureIntent.type = "image/*"
             startActivityForResult(takePictureIntent, REQUESTCODE)
         }
     }
@@ -49,8 +53,12 @@ class SignInActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUESTCODE && resultCode == RESULT_OK) {
-        val imgbitmap = data?.extras?.get("data") as Bitmap
-            binding.profileImageView.setImageBitmap(imgbitmap)
+//               val inputstream = ContentResolver().openInputStream(data.data)
+            //imgbitmap = data?.extras?.get("data") as Bitmap
+//            binding.profileImageView.setImageBitmap(imgbitmap)
+            val uri = data?.data
+            imgbitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            binding.profileImageView.setImageURI(data?.data)
         }
     }
 
@@ -58,9 +66,10 @@ class SignInActivity : AppCompatActivity() {
         binding.btnRegister.setOnClickListener {
             val username = binding.editTxtEmail.text.toString().trim()
             val password = binding.editTxtPassword.text.toString().trim()
+            val name = binding.editTxtName.text.toString().trim()
             val repeatPassword = binding.editTxtRepeatPassword.text.toString().trim()
             validateinfo(username, password, repeatPassword)
-            createUser(username, password)
+            createUser(username, password, name)
         }
     }
 
@@ -83,8 +92,8 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun createUser(username: String, password: String) {
-        signInViewModel.login(username, password).observe(this, Observer {
+    private fun createUser(username: String, password: String, name: String) {
+        signInViewModel.login(username, password, imgbitmap, name).observe(this, Observer {
             when (it) {
                 is Resource.Loading -> {
                     binding.btnRegister.isEnabled = false
